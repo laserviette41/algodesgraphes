@@ -1,7 +1,7 @@
 #ifndef TOOLS_C
 #define TOOLS_C
 
-//#include "tools.h"
+#include "tools.h"
 #include "list.c"
 #include<string.h>
 #include<stdio.h>
@@ -55,7 +55,7 @@ int get_sol(int x,sol *s){
 int clause_sat(cla c, sol *s){
 	int i=c.nb;
 	while(i--)
-		if(get_sol(c.v[i]))
+		if(get_sol(c.v[i],s))
 			return 1;
 	return 0;
 }
