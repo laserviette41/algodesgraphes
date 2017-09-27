@@ -1,50 +1,72 @@
 #ifndef TOOLS_C
 #define TOOLS_C
 
-#include "tools.h"
+//#include "tools.h"
+#include "list.c"
+#include<string.h>
+#include<stdio.h>
 
-cla *parseur(char *chemin){
-    FILE *I=fopen(chemin,"r");
-    if(!I)
-        return NULL;
-    int i=0,j=0,k=0;
-    int *o=(int*)malloc(sizeof(int)*10);
-    char *l=(char*)malloc(sizeof(char)*50),*tmp=(char*)malloc(sizeof(char)*10);
-    char *b={" "};
+void parseur(char *ch,ptr_list *p,int *prm){
+	FILE *I=fopen(ch,"r");
+    if(!I){
+		printf("Fichier introuvable\n");
+		exit(EXIT_FAILURE);
+	}
+    int i=0,j=0;
+    int *o=malloc(sizeof(int)*10);
+    char *l=malloc(sizeof(char)*50),*tmp=(char*)malloc(sizeof(char)*10),*b={" "};
     while(1){
         fgets(l,50,I);
         if(l[0]=='p')
             break;
     }
-    tmp=strtok(l,b);
-    for(;i<3;i++)
-        tmp=strtok(NULL,b);
-    int y=atoi(tmp);
-    free(tmp);
-    tmp=(char*)malloc(sizeof(char)*10);
-    cla *r=(cla*)malloc(sizeof(cla)*y);
-    i=0;
+
     while(fgets(l,50,I)){
         tmp=strtok(l,b);
         o[i++]=atoi(tmp);
         while(o[i-1]!=0){
+			tmp=malloc(sizeof(char)*10);
             tmp=strtok(NULL,b);
             o[i++]=atoi(tmp);
-            free(tmp);
-            tmp=(char*)malloc(sizeof(char)*10);
         }
-        r[j].nb=i;
-        r[j].v=(int*)malloc(sizeof(int)*i);
-        for(;k<i;k++){
-            r[j].v[k]=o[k];
-        }
+        ajout_clause(p,o,i);
         free(o);
-        o=(int*)malloc(sizeof(int)*10);
-        k=0;
+        o=malloc(sizeof(int)*10);
         i=0;
         j++;
-    }
-    return r;
+	}
+	if(tmp) free(tmp);
+	if(o) free(o);
+}
+
+int get_sol(int x,sol *s){
+	sol *tmp=s;
+	while(tmp){
+		if(tmp->num==x && tmp->val==1){
+			free(tmp);
+			return 1;
+		}
+		tmp++;
+	}
+	free(tmp);
+	return 0;
+}
+
+int clause_sat(cla c, sol *s){
+	int i=c.nb;
+	while(i--)
+		if(get_sol(c.v[i]))
+			return 1;
+	return 0;
+}
+
+int formule_sat(ptr_list *p,sol *s){
+	cla *c=p->pr;
+	while(c){
+		if(!clause_sat(*c,s)) return 0;
+		c=c->next;
+	}
+	return 1;
 }
 
 
