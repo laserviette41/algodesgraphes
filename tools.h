@@ -12,7 +12,6 @@
 #include<stdlib.h>
 #include<string.h>
 
-
 /// typedef de l'abr defini plus loin
 typedef struct Arbre abr;
 
@@ -54,11 +53,13 @@ int is_unit(cla); // cla est unitaire ?
 
 sol stock_sol(int,int); // (a preciser) stockage de la solution int valeur int numero de la variable
 
-int var_plus_pre(cla*); // detecte la variable la plus presente et renvoie son indice
+int var_plus_pre(int*,int); // detecte la variable la plus presente et renvoie son indice
 
 void parseur(char*,ptr_list*,int*); // lit le cnf et stocke les variable dans une liste chaine
 
 int get_sol(int,sol*); // cherche la solution de la variable int dans sol*
+
+int inverser(int);
 
 /**
  * coder structure abr
