@@ -17,25 +17,29 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-    struct Arbre{
-        arbre noeud * pere;
-        arbre fils * droit;
-        arbre fils * gauche;
-        int numero_variable_a_evaluer; // a chaque noeud, on incrementera cette var. Au noeud 0, on evalue la variable 0. Au noeud 1 on evalue la var 1.
-        int *historique_des_evalutions; // c'est un tableau. En clair au noeud 0 gauche, il contiendra par exemple 0. Puis au noeud 1 gauche, il contiendra 0 et 1 ou 0 et 0
-        clause *formule; // la liste chainée de clause 
+    
+    struct clause{
+    int nombre_literaux;
+    int Sat; // cette variable va stocker 1 si la clause est sat ou 0 sinon. Elle va servir dans pour la fonction simplifier_formule. Sa valeur sera affectée par la fonction simplifier_clause
+    int *variable; //Tableau qui stock les litéreaux;
+    struct clause *nxt;
+    struct clause *prv;
     };
-    typedef struct Arbre arbre;
+    typedef struct clause clause;
     
-    typedef struct Clause{
-        int nombre_literaux;
-        int Sat; // cette variable va stocker 1 si la clause est sat ou 0 sinon. Elle va servir dans pour la fonction simplifier_formule. Sa valeur sera affectée par la fonction simplifier_clause
-        int *variable; //Tableau qui stock les litéreaux;
-    }clause;
+
+    struct arbre{
+    struct    arbre  * pere;
+    struct    arbre * fils_droit;
+    struct    arbre * fils_gauche;
+    int numero_variable_a_evaluer; // a chaque noeud, on incrementera cette var. Au noeud 0, on evalue la variable 0. Au noeud 1 on evalue la var 1.
+    int *historique_des_evalutions; // c'est un tableau. En clair au noeud 0 gauche, il contiendra par exemple 0. Puis au noeud 1 gauche, il contiendra 0 et 1 ou 0 et 0
+    clause *formule; // la liste chainée de clause 
+    };
+    typedef struct arbre arbre;
+   
     
-    
-    void simplifier_clause(int numero_variable_a_evaluer,clause); // Ne simplifie qu'une clause. Le numéro de la variable à evaluer est stocké dans l'arbre( i.e le noeud courant)
+void simplifier_clause(int numero_variable_a_evaluer,clause *, int assignation); // Ne simplifie qu'une clause. Le numéro de la variable à evaluer est stocké dans l'arbre( i.e le noeud courant)
     
     // si on est sur arbre gauche, numero_variable_a_evaluer va toujours prendre la valeur 0
     //si on est  sur arbre droite, numero_variable_a_evaluer va toujours prendre la valeur 1
@@ -46,10 +50,11 @@ extern "C" {
     // si c'est la clause est SAT, on met "Sat" à 1;
     // sinon on résuit juste la clause et "Sat" à 0. Par exemple on aura (a ou non b ou c) qui devient (nonB ou c) par exemple.
     
+    int var_est_dans_clause(int,clause *); // fonction annexe utilisé par simplifier_clause; Elle dit si la variable courante à évaluer est dans la clause ou pas.
     
-    clause * simplifier_formule(int numero_variable_a_evaluer, arbre formule); // Le numero variable a evaluer est dans le noeud courant ainsi que la formule
+    clause * simplifier_formule(arbre*); // Le numero variable a evaluer est dans le noeud courant (arbre courant) ainsi que la formule aussi;
     // Elle appelle simplifier_clause et des boucles boucles boucles..
-    // Puis elle va regarder ce qu'il y a dans "Sat" et faire les supressions dans la chaine de clause( formule);
+    // Puis elle va regarder ce qu'il y a dans "Sat" et faire les supressions dans la chaine de clause(c'est à dire dans la formule);
 #ifdef __cplusplus
 }
 #endif
