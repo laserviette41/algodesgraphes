@@ -22,8 +22,8 @@ extern "C" {
     int nombre_literaux;
     int Sat; // cette variable va stocker 1 si la clause est sat ou 0 sinon. Elle va servir dans pour la fonction simplifier_formule. Sa valeur sera affectée par la fonction simplifier_clause
     int *variable; //Tableau qui stock les litéreaux;
-    struct clause *nxt;
-    struct clause *prv;
+    struct clause *nxt; // pointeur sur la clause suivante;
+    struct clause *prv; // pointeur sur la clause précedente;
     };
     typedef struct clause clause;
     
@@ -55,6 +55,10 @@ void simplifier_clause(int numero_variable_a_evaluer,clause *, int assignation);
     clause * simplifier_formule(arbre*); // Le numero variable a evaluer est dans le noeud courant (arbre courant) ainsi que la formule aussi;
     // Elle appelle simplifier_clause et des boucles boucles boucles..
     // Puis elle va regarder ce qu'il y a dans "Sat" et faire les supressions dans la chaine de clause(c'est à dire dans la formule);
+    
+    void unit_test_var_est_dans_clause(int numero_variable_a_evaluer,clause *clause);
+    void unit_test_simplifier_clause(int numero_variable_a_evaluer,clause *clause, int assignation);
+    void unit_test_simplifier_formule(arbre * arbre);
 #ifdef __cplusplus
 }
 #endif
