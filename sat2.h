@@ -35,6 +35,8 @@ extern "C" {
     int numero_variable_a_evaluer; // a chaque noeud, on incrementera cette var. Au noeud 0, on evalue la variable 0. Au noeud 1 on evalue la var 1.
     int *historique_des_evalutions; // c'est un tableau. En clair au noeud 0 gauche, il contiendra par exemple 0. Puis au noeud 1 gauche, il contiendra 0 et 1 ou 0 et 0
     clause *formule; // la liste chainée de clause 
+    int nombre_clause;
+    int nombre_clause_sat;
     };
     typedef struct arbre arbre;
    
@@ -59,6 +61,9 @@ void simplifier_clause(int numero_variable_a_evaluer,clause *, int assignation);
     void unit_test_var_est_dans_clause(int numero_variable_a_evaluer,clause *clause);
     void unit_test_simplifier_clause(int numero_variable_a_evaluer,clause *clause, int assignation);
     void unit_test_simplifier_formule(arbre * arbre);
+    
+    int formule_est_sat(arbre * arbre);
+    void unit_test_formule_est_sat(arbre * arbre);
 #ifdef __cplusplus
 }
 #endif

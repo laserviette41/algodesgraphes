@@ -54,19 +54,27 @@ int var_est_dans_clause(int numero_variable_a_evaluer,clause *clause){
 clause * simplifier_formule(arbre * arbre){
     clause *tmp=(clause*)malloc(sizeof(clause));
     tmp=arbre->formule;
+    int cpt=0;
     while(arbre->formule){ //traitement pour une clause;
-        
-        simplifier_clause(arbre->numero_variable_a_evaluer,arbre->formule, 0);  //jai mis une assignation à zero. c'est pas dynamique là! 
-        
-        if(arbre->formule->Sat){ //Si la clause courante est SAT
-            arbre->formule->prv=arbre->formule->nxt; // je fais pointer la clause précédente vers celle qui suit la clause courante;
-        }
-        // Si la clause courante n'est pas SAT, la fonction "simplifier_clause" a déja résuit la clause convenablement;
-  
+        simplifier_clause(arbre->numero_variable_a_evaluer,arbre->formule, 1);  //jai mis une assignation à zero. c'est pas dynamique là! 
+         // Si la clause courante n'est pas SAT, la fonction "simplifier_clause" a déja résuit la clause convenablement;
+        if(arbre->formule->Sat) cpt++;
         arbre->formule=arbre->formule->nxt; //on passe à la clause suivante ;
         //free(arbre->formule); // puis je supprime la clause courante. Où le free, ici ??
     }
+    arbre->nombre_clause_sat=cpt;
     return tmp; // je retourne le pointeur sur la formule;
+}
+int formule_est_sat(arbre * arbre){
+    int cpt=0;
+    while(arbre->formule){
+        simplifier_clause(arbre->numero_variable_a_evaluer,arbre->formule, 1); //jai mis une assignation à zero. c'est pas dynamique là! 
+        if(arbre->formule->Sat) cpt++;
+        arbre->formule=arbre->formule->nxt;
+    }
+    printf("%d",cpt);
+    if(cpt==arbre->nombre_clause) return 1;
+    else return 0;
 }
 
 
@@ -92,7 +100,15 @@ void unit_test_simplifier_formule(arbre * arbre){
         for(int i=0; i< 3; i++){
         printf("%d |", Clause->variable[i]);
         }
+        if(Clause->Sat==1) printf("\n  etat de la clause: SAT  ");
+        else printf("etat de la clause: pas SAT");
         printf("\n  clause suivante : \n");
         Clause=Clause->nxt;
     }
+}
+
+void unit_test_formule_est_sat(arbre * arbre){
+    
+    if(arbre->nombre_clause_sat==arbre->nombre_clause) printf("la formule est SAT");
+    else printf("la formule n'est pas SAT");
 }
