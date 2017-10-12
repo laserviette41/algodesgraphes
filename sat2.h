@@ -21,6 +21,7 @@ extern "C" {
     struct clause{
     int nombre_literaux;
     int Sat; // cette variable va stocker 1 si la clause est sat ou 0 sinon. Elle va servir dans pour la fonction simplifier_formule. Sa valeur sera affectée par la fonction simplifier_clause
+    //int conflit; // Si la variable "Sat" passe de 1 à 0, alors il y'a conflit;
     int *variable; //Tableau qui stock les litéreaux;
     struct clause *nxt; // pointeur sur la clause suivante;
     struct clause *prv; // pointeur sur la clause précedente;
@@ -32,11 +33,12 @@ extern "C" {
     struct    arbre  * pere;
     struct    arbre * fils_droit;
     struct    arbre * fils_gauche;
+    int continuer_simpliflication;//dis si on doit continuer à simplifier la formule ou pas; On va regarder si une clause est unitaire puis vérifier en fonction de notre assignation si la formule est UNSAT;
     int numero_variable_a_evaluer; // a chaque noeud, on incrementera cette var. Au noeud 0, on evalue la variable 0. Au noeud 1 on evalue la var 1.
     int *historique_des_evalutions; // c'est un tableau. En clair au noeud 0 gauche, il contiendra par exemple 0. Puis au noeud 1 gauche, il contiendra 0 et 1 ou 0 et 0
     clause *formule; // la liste chainée de clause 
     int nombre_clause;
-    int nombre_clause_sat;
+    int nombre_clause_sat; //cette variable indique le nombre de clause SAT dans la formule, elle est assigné après le passage de simplifier_formule;
     };
     typedef struct arbre arbre;
    
@@ -53,8 +55,8 @@ void simplifier_clause(int numero_variable_a_evaluer,clause *, int assignation);
     // sinon on résuit juste la clause et "Sat" à 0. Par exemple on aura (a ou non b ou c) qui devient (nonB ou c) par exemple.
     
     int var_est_dans_clause(int,clause *); // fonction annexe utilisé par simplifier_clause; Elle dit si la variable courante à évaluer est dans la clause ou pas.
-    
-    clause * simplifier_formule(arbre*); // Le numero variable a evaluer est dans le noeud courant (arbre courant) ainsi que la formule aussi;
+    int clause_est_unitaire(clause *clause); // Vérifie si la clause est unitaire. 
+    clause * simplifier_formule(arbre*,int); // Le numero variable a evaluer est dans le noeud courant (arbre courant) ainsi que la formule aussi;
     // Elle appelle simplifier_clause et des boucles boucles boucles..
     // Puis elle va regarder ce qu'il y a dans "Sat" et faire les supressions dans la chaine de clause(c'est à dire dans la formule);
     
@@ -64,6 +66,7 @@ void simplifier_clause(int numero_variable_a_evaluer,clause *, int assignation);
     
     int formule_est_sat(arbre * arbre);
     void unit_test_formule_est_sat(arbre * arbre);
+    void unit_clause_est_unitaire(clause *clause);
 #ifdef __cplusplus
 }
 #endif
