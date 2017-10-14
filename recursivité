@@ -13,3 +13,13 @@ int solveur(arbre *a, int assignation, int *sol,int nb_var){
     else
         return solveur(b,0,sol,nb_var) || solveur(b,1,sol,nb_var);
 }
+
+arbre *copieabr(arbre *a,int assignation){
+    arbre *b=malloc(sizeof(arbre));
+    b->historique_des_evalutions=a->historique_des_evalutions;
+    b->nombre_clause=a->nombre_clause;
+    b->nombre_clause_sat=b->nombre_clause_sat;
+    b->numero_variable_a_evaluer=a->numero_variable_a_evaluer;
+    b->formule=simplifier_formule(a,assignation);
+    return b;
+}
