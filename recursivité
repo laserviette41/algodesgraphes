@@ -1,25 +1,23 @@
-int solveur(arbre *a, int assignation, int *sol,int nb_var){
-    arbre *b=copieabr(a,assignation);
-    if(formule_est_sat(b)){
-       int i=0;
-       for(;b->historique_des_evalutions[i]==0 || b->historique_des_evalutions[i]==1;i++)
-            sol[i]=b->historique_des_evalutions;
-       for(;i<nb_var;i++)
-            sol[i]=0;
-        return 1;
-    }
-    else if(b->numero_variable_a_evaluer==nb_var)
-        return 0;
-    else
-        return solveur(b,0,sol,nb_var) || solveur(b,1,sol,nb_var);
-}
-
-arbre *copieabr(arbre *a,int assignation){
+void solveur_sat(arbre *a, int numero_variable_a_evaluer, int assignation,int nb_var){
+    int i;
     arbre *b=malloc(sizeof(arbre));
-    b->historique_des_evalutions=a->historique_des_evalutions;
-    b->nombre_clause=a->nombre_clause;
-    b->nombre_clause_sat=b->nombre_clause_sat;
+    b->continuer_simpliflication=1;
+    b->nombre_clause_sat=a->nombre_clause_sat;
     b->numero_variable_a_evaluer=a->numero_variable_a_evaluer;
     b->formule=simplifier_formule(a,assignation);
-    return b;
+    b->nombre_clause=a->nombre_clause;
+    b->historique_des_evalutions=malloc(sizeof(int)*nb_var);
+    for(i=0;i<numero_variable_a_evaluer && numero_variable_a_evaluer>1;i++)
+        b->historique_des_evalutions[i]=a->historique_des_evalutions[i-1];
+    b->historique_des_evalutions[i]=assignation;
+    if(formule_est_sat(a)){
+        printf("SAT\n");
+        exit(EXIT_SUCCESS);
+    }
+    else if(numero_variable_a_evaluer==nb_var){
+        printf("UNSAT\n");
+        exit(EXIT_SUCCESS);
+    }
+    solveur_sat(b,numero_variable_a_evaluer+1,0,nb_var);
+    solveur_sat(b,numero_variable_a_evaluer+1,1,nb_var);
 }
