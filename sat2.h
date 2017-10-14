@@ -10,7 +10,7 @@
  *
  * Created on 1 octobre 2017, 15:24
  */
-
+///\documentation
 #ifndef SAT2_H
 #define SAT2_H
 
@@ -20,25 +20,29 @@ extern "C" {
     
     struct clause{
     int nombre_literaux;
-    int Sat; // cette variable va stocker 1 si la clause est sat ou 0 sinon. Elle va servir dans pour la fonction simplifier_formule. Sa valeur sera affectée par la fonction simplifier_clause
-    //int conflit; // Si la variable "Sat" passe de 1 à 0, alors il y'a conflit;
-    int *variable; //Tableau qui stock les litéreaux;
-    struct clause *nxt; // pointeur sur la clause suivante;
-    struct clause *prv; // pointeur sur la clause précedente;
+    /// cette variable va stocker 1 si la clause est sat ou 0 sinon. Elle va servir dans pour la fonction simplifier_formule. Sa valeur sera affectée par la fonction simplifier_clause
+    int Sat; 
+    ///Tableau qui stock les litéreaux;
+    int *variable; 
+    /// pointeur sur la clause suivante
+    struct clause *nxt; ;
+    /// pointeur sur la clause précedente;
+    struct clause *prv; 
     };
     typedef struct clause clause;
     
 
     struct arbre{
-    //struct    arbre  * pere;
-    //struct    arbre * fils_droit;
-    //struct    arbre * fils_gauche;
-    int continuer_simpliflication;//dis si on doit continuer à simplifier la formule ou pas; On va regarder si une clause est unitaire puis vérifier en fonction de notre assignation si la formule est UNSAT;
-    int numero_variable_a_evaluer; // a chaque noeud, on incrementera cette var. Au noeud 0, on evalue la variable 0. Au noeud 1 on evalue la var 1.
-    //int *historique_des_evalutions; // c'est un tableau. En clair au noeud 0 gauche, il contiendra par exemple 0. Puis au noeud 1 gauche, il contiendra 0 et 1 ou 0 et 0
-    clause *formule; // la liste chainée de clause 
+    ///dis si on doit continuer à simplifier la formule ou pas; On va regarder si une clause est unitaire puis vérifier en fonction de notre assignation si la formule est UNSAT;
+    int continuer_simpliflication;
+    int numero_variable_a_evaluer; 
+    ///garde en mémoire les assignations des différentes variables
+    int *historique_des_evalutions; 
+    ///la liste chainée de clause 
+    clause *formule; 
     int nombre_clause;
-    int nombre_clause_sat; //cette variable indique le nombre de clause SAT dans la formule, elle est assigné après le passage de simplifier_formule;
+    ///cette variable indique le nombre de clause SAT dans la formule, elle est assigné après le passage de simplifier_formule;
+    int nombre_clause_sat; 
     };
     typedef struct arbre arbre;
    
@@ -68,7 +72,11 @@ void simplifier_clause(int numero_variable_a_evaluer,clause *, int assignation);
     int test_formule_est_sat(arbre * arbre);
     void unit_clause_est_unitaire(clause *clause);
     
-    void solveur_sat(arbre *, int numero_variable_a_evaluer, int assignation);
+    void solveur_sat_Desire(arbre * Arbre, int numero_variable_a_evaluer, int assignation);
+    void solveur_sat_Gabriel(arbre *a, int numero_variable_a_evaluer, int assignation,int nb_var);
+    void solveur_sat_Gabriel2(arbre *a, int numero_variable_a_evaluer, int assignation,int nb_var,int nb_cla);
+    void parseur(char *ch,clause *p,int *prm);
+    void ajout_clause(clause *p,int *va,int nb);
         
     
 #ifdef __cplusplus

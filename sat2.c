@@ -9,6 +9,12 @@
 #include<stdlib.h>
 #include<string.h>
 
+/**
+ * \fn void simplifier_clause(int numero_variable_a_evaluer,clause *clause, int assignation)
+ * \brief fonction qui simplifie une clause et dit si cette clause est sat ou pas.
+ * \param Assignation vaut soit 0 soit 1
+ * \return La clause simplifiée
+ */
 void simplifier_clause(int numero_variable_a_evaluer,clause *clause, int assignation){
   
     if( !( var_est_dans_clause(numero_variable_a_evaluer, clause) ) ) {
@@ -48,12 +54,26 @@ void simplifier_clause(int numero_variable_a_evaluer,clause *clause, int assigna
     }
 } // Au final simplifier_clause va réduire la clause ou la laisser telle qu'elle. Et elle va aussi modifier la variable "int SAT" à 1 ou 0; 
 
+
+/**
+ * \fn int var_est_dans_clause(int numero_variable_a_evaluer,clause *clause)
+ * \brief Cette fonction vérifie si une variable est dans la clause
+ * \return 1 si la variable est dans la clause et 0 sinon
+ */
+
 int var_est_dans_clause(int numero_variable_a_evaluer,clause *clause){
     for( int i=0; i< clause->nombre_literaux ; i++){
         if( clause->variable[i] == numero_variable_a_evaluer || clause->variable[i] == (- numero_variable_a_evaluer)) return 1;
     } 
     return 0;
 }
+
+
+/**
+ * \fn int clause_est_unitaire(clause *clause)
+ * \brief fonction qui vérifie si une clause contient qu'un seul litéral
+ * \return 1 si clause unitaire et 0 sinon
+ */
 int clause_est_unitaire(clause *clause){
     int cpt=0; // compte le nombre de 0 dans une clause;
     if(clause->nombre_literaux==1) return 1; // S'il y'a un seul litéral => clause unitaire
@@ -65,6 +85,15 @@ int clause_est_unitaire(clause *clause){
     else return 0;
     
 }
+
+/**
+ * \fn clause * simplifier_formule(arbre * arbre, int assignation)
+ * \brief fonction qui simplifie une formule( liste chainée de clause ).
+ * \param Assignation: Il s'agit de la valeur (0 ou 1) qu'on ouhaite affecté à la variable à simplifiée. Et cette dernieère se trouve dan l'arbre
+ * \return La clause simplifiée et affecte 0 ou 1 à la variable " int continuer_simplification"
+ */
+
+
 clause * simplifier_formule(arbre * arbre, int assignation){
     clause *tmp=(clause*)malloc(sizeof(clause));
     tmp=arbre->formule;
@@ -95,6 +124,14 @@ clause * simplifier_formule(arbre * arbre, int assignation){
     return tmp; // je retourne le pointeur sur la formule;
 }
 
+
+/**
+ * \fn unit_test_var_est_dans_clause(int numero_variable_a_evaluer,clause *clause)
+ * \brief fonction qui test le bon fonctionnement de la fonction "var_est_dans_clause(int numero_variable_a_evaluer,clause *clause)" .
+ 
+ * \return Informe par affichage ue la variable est dans la clause ou pas
+ */
+
 void unit_test_var_est_dans_clause(int numero_variable_a_evaluer,clause *clause){
     int res=0;
     res=var_est_dans_clause(numero_variable_a_evaluer,clause);
@@ -102,6 +139,11 @@ void unit_test_var_est_dans_clause(int numero_variable_a_evaluer,clause *clause)
     else if(res == 0) printf("la variable n'est pas dans la clause");
 }
 
+/**
+ * \fn void unit_test_simplifier_clause(int numero_variable_a_evaluer,clause *clause, int assignation)
+ * \brief Fonction qui vérifie si "test_simplifier_clause(int numero_variable_a_evaluer,clause *clause, int assignation)" fonctionne
+ * \return Message de bon fonctionnement ou pas
+ */
 void unit_test_simplifier_clause(int numero_variable_a_evaluer,clause *clause, int assignation){ //cette fonction va afficher la la clause simplifié;
     simplifier_clause(numero_variable_a_evaluer,clause,assignation);
     for(int i=0; i< clause->nombre_literaux; i++){
@@ -110,6 +152,12 @@ void unit_test_simplifier_clause(int numero_variable_a_evaluer,clause *clause, i
     printf("\nLe contenu de la variable SAT est à: %d  après le passage de la fonction simplifier_clause() \n", clause->Sat);
 }
 
+/**
+ * \fn void unit_test_simplifier_formule(arbre * arbre)
+ * \brief fonction qui test le bon fonctionnement de la fonction "simplifier_formule(arbre * arbre)" .
+ 
+ * \return Affiche toutes les clauses et dit si, pour chacune, si elle est sat ou pas
+ */
 void unit_test_simplifier_formule(arbre * arbre){
     clause * Clause=(clause*)malloc(sizeof(clause));
     Clause=simplifier_formule(arbre,0); // assignation est mis à 0 ici arbitrairement pour tester;
@@ -125,17 +173,61 @@ void unit_test_simplifier_formule(arbre * arbre){
     printf("continuer à simplifier ? %d", arbre->continuer_simpliflication);
 }
 
+/**
+ * \fn int test_formule_est_sat(arbre * arbre)
+ * \brief Cette fonction teste si une formule complète est SAT ou pas.
+ 
+ * \return 1 si SAT et 0 sinon
+ */
 int test_formule_est_sat(arbre * arbre){
     
     if(arbre->nombre_clause_sat==arbre->nombre_clause) return 1;
     else return 0;
 }
 
+/**
+ * \fn void unit_clause_est_unitaire(clause *clause)
+ * \brief Cette fonction vérifie que la fonction "clause_est_unitaire(clause *clause)" a le bon comportement
+ 
+ * \return Un message qui dit si la clause est bien unitaire ou pas
+ */
 void unit_clause_est_unitaire(clause *clause){
     if (clause_est_unitaire(clause)) printf("la clause est unitaire");
     else printf("la clause n'est pas unitaire");
 }
-void solveur_sat(arbre * Arbre, int numero_variable_a_evaluer, int assignation){
+
+
+ void solveur_sat_Gabriel(arbre *a, int numero_variable_a_evaluer, int assignation,int nb_var){
+    int i;
+    arbre *b=malloc(sizeof(arbre));
+    b->continuer_simpliflication=1;
+    b->nombre_clause_sat=a->nombre_clause_sat;
+    b->numero_variable_a_evaluer=a->numero_variable_a_evaluer;
+    b->formule=simplifier_formule(a,assignation);
+    b->nombre_clause=a->nombre_clause;
+    b->historique_des_evalutions=malloc(sizeof(int)*nb_var);
+    for(i=0;i<numero_variable_a_evaluer && numero_variable_a_evaluer>1;i++)
+        b->historique_des_evalutions[i]=a->historique_des_evalutions[i-1];
+    b->historique_des_evalutions[i]=assignation;
+    if(formule_est_sat(a)){
+        printf("SAT\n");
+        exit(EXIT_SUCCESS);
+    }
+    else if(numero_variable_a_evaluer==nb_var){
+        printf("UNSAT\n");
+        exit(EXIT_SUCCESS);
+    }
+    solveur_sat(b,numero_variable_a_evaluer+1,0,nb_var);
+    solveur_sat(b,numero_variable_a_evaluer+1,1,nb_var);
+}
+
+/**
+ * \fn void solveur_sat(arbre * Arbre, int numero_variable_a_evaluer, int assignation)
+ * \brief fonction qui répond au probleme de base. la formule est-elle SAT ?
+ * \param Assignation : Il s'agit ici de l'assignation de la premiere variable qu'on veut évaluer
+ * \return La réponse au problème
+ */
+void solveur_sat_Desire(arbre * Arbre, int numero_variable_a_evaluer, int assignation){
     if(Arbre->continuer_simpliflication == 0) printf("formule unsat"); //CAS DE BASE
     //else if (Arbre->continuer_simpliflication == 1 && Arbre->numero_variable_a_evaluer==3); // LA SUITE DU CAS DE BASE
     else{
@@ -166,4 +258,114 @@ void solveur_sat(arbre * Arbre, int numero_variable_a_evaluer, int assignation){
     }
    
 }
+
+/* Solveur 
+@params arbre *a : element d'étude
+@params int numero_variable_a_evaluer : variable a évaluer
+@params int assignation : vbaleur a assigner 
+@params int nb _var : nombre de variable
+@params int nb_cla ; nomvbre de clause
+*/
+void solveur_sat_Gabriel2(arbre *a, int numero_variable_a_evaluer, int assignation,int nb_var,int nb_cla){
+    int i;
+    arbre *b=malloc(sizeof(arbre));
+    b->continuer_simpliflication=1;
+    b->nombre_clause_sat=a->nombre_clause_sat;
+    b->numero_variable_a_evaluer=a->numero_variable_a_evaluer;
+    b->formule=simplifier_formule(a,assignation); // on simplifie la formule
+    b->nombre_clause=nb_cla;
+    b->historique_des_evalutions=malloc(sizeof(int)*nb_var);
+    for(i=0;i<numero_variable_a_evaluer && numero_variable_a_evaluer>1;i++)
+        b->historique_des_evalutions[i]=a->historique_des_evalutions[i-1];
+    b->historique_des_evalutions[i]=assignation;
+    if(formule_est_sat(b)){
+        printf("SAT\n");
+        exit(EXIT_SUCCESS);
+    }
+    else if(numero_variable_a_evaluer==nb_var){
+        printf("UNSAT\n");
+        exit(EXIT_SUCCESS);
+    }
+    solveur_sat(b,numero_variable_a_evaluer+1,1,nb_var,nb_cla);
+    solveur_sat(b,numero_variable_a_evaluer+1,0,nb_var,nb_cla);
+}
+
+/* Fonction de lecture du fichier CNF
+@params char *ch : chemin d'acces au fichiers CNF
+@params clause *p : pointeur vers le premier élément de la liste chainé des clauses
+@params int *prm : tableau permettant de récupere les parametres du problème
+*/
+
+void parseur(char *ch,clause *p,int *prm){
+	FILE *I=fopen(ch,"r");
+    if(!I){
+		printf("Fichier introuvable\n");
+		exit(EXIT_FAILURE);
+	}
+    int i=0,j=0,k;
+    int *o=malloc(sizeof(int)*10);
+    char *l=malloc(sizeof(char)*50),*tmp=(char*)malloc(sizeof(char)*10),*b={" "};
+    while(1){
+        fgets(l,50,I); // on saute les lignes de commentaires jusqu'a la ligne des parametres
+        if(l[0]=='p')
+            break;
+    }
+    tmp=strtok(l,b);
+    tmp=strtok(NULL,b);
+    tmp=strtok(NULL,b);
+    prm[0]=atoi(tmp); // recuperation du nombre de variable
+    tmp=strtok(NULL,b);
+    prm[1]=atoi(tmp);// recuperation du nombre de clause
+    int q[prm[0]];
+    for(i=0;i<prm[0];i++) q[i]=0;
+    i=0;
+    while(fgets(l,50,I)){
+        realloc(tmp,sizeof(char)*10);
+        tmp=strtok(l,b);
+        o[i++]=atoi(tmp);
+        k=abs(o[i-1]-1);
+        q[k]++;
+        while(o[i-1]!=0){
+	    realloc(tmp,sizeof(char)*10);
+            tmp=strtok(NULL,b);
+            o[i++]=atoi(tmp); // on stock la variable sous le format d'un int pour ensuite l'enregistré lors de la creation de la clause
+        }
+        ajout_clause(p,o,i-1);
+        realloc(o,sizeof(int)*10);
+        i=0;
+        j++;
+	}
+	if(tmp) free(tmp);
+	if(o) free(o);
+}
  
+ /* ajoute une clause a la liste chainee
+@params clause *p : pointeur vers le premier élément de la liste
+@params int *va : tableau contenant les variables 
+@params  int nb : nombre de litéraux
+*/
+
+void ajout_clause(clause *p,int *va,int nb){
+	int i=0;
+	clause *c=malloc(sizeof(clause));
+	if(!c) exit(EXIT_FAILURE);
+	c->nombre_literaux=nb;
+	c->Sat=0;
+	c->variable=malloc(sizeof(int)*nb);
+	for(;i<nb;i++)
+        c->variable[i]=va[i];
+	clause *tmp=p;
+	while(tmp->nxt) tmp=tmp->nxt;
+	c->prv=tmp;
+	if(p){
+        tmp->nxt=c;
+        c->prv=tmp;
+        c->nxt=NULL;
+	}
+	else{
+        c->nxt=NULL;
+        c->prv=NULL;
+        p=malloc(sizeof(clause));
+        p=c;
+	}
+}
