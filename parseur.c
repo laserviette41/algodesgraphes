@@ -1,3 +1,7 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include "sat2.h"
+
 void parseur(char *ch,clause *p,int *prm){
 	FILE *I=fopen(ch,"r");
     if(!I){
@@ -88,4 +92,28 @@ void solveur_sat(arbre *a, int numero_variable_a_evaluer, int assignation,int nb
     }
     solveur_sat(b,numero_variable_a_evaluer+1,1,nb_var,nb_cla);
     solveur_sat(b,numero_variable_a_evaluer+1,0,nb_var,nb_cla);
+}
+
+arbre *init_a(clause *p,int nb_var,int nb_clause,int ass){
+    arbre *a=malloc(sizeof(arbre));
+    a->continuer_simpliflication=1;
+    a->formule=malloc(sizeof(clause));
+    a->formule=p;
+    a->nombre_clause=nb_clause;
+    a->nombre_clause_sat=0;
+    a->numero_variable_a_evaluer=1;
+    a->historique_des_evalutions=malloc(sizeof(int)*nb_var);
+    a->historique_des_evalutions[0]=ass;
+}
+
+int main(void){
+    char *ch=malloc(sizeof(char)*50);
+    int i,j;
+    scanf("%s",ch);
+    clause *x=NULL;
+    int prm[2]; // prm[0] nb de variable et prm[1] nb de clause
+    parseur(ch,x,prm);
+    arbre *a=init_a(x,prm[0],prm[1],0);
+    solveur(a,1,0,prm[0],prm[1]);
+    return 0;
 }
