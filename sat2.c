@@ -68,16 +68,16 @@ int clause_est_unitaire(clause *clause){
 clause * simplifier_formule(arbre * arbre, int assignation){
     clause *tmp=(clause*)malloc(sizeof(clause));
     tmp=arbre->formule;
-    int cpt=0;
+    int cpt=0; //compte le nombre de clause SAT;
     while(arbre->formule){ //traitement pour une clause;
         
         if (clause_est_unitaire(arbre->formule)){
-        int tmp=0;
+        int temp=0;
         for(int i=0; i<arbre->formule->nombre_literaux; i++){
-            if(arbre->formule->variable[i]!=0) tmp=arbre->formule->variable[i];
+            if(arbre->formule->variable[i]!=0) temp=arbre->formule->variable[i];
         }    
-        if(tmp==arbre->numero_variable_a_evaluer){
-            if((tmp>0 && assignation==0) || (tmp<0 && assignation==1)){
+        if(temp==arbre->numero_variable_a_evaluer){
+            if((temp>0 && assignation==0) || (temp<0 && assignation==1)){
                 arbre->continuer_simpliflication=0;
                 //return;
             }  
@@ -125,13 +125,117 @@ void unit_test_simplifier_formule(arbre * arbre){
     printf("continuer à simplifier ? %d", arbre->continuer_simpliflication);
 }
 
-void unit_test_formule_est_sat(arbre * arbre){
+int test_formule_est_sat(arbre * arbre){
     
-    if(arbre->nombre_clause_sat==arbre->nombre_clause) printf("la formule est SAT");
-    else printf("la formule n'est pas SAT");
+    if(arbre->nombre_clause_sat==arbre->nombre_clause) return 1;
+    else return 0;
 }
 
 void unit_clause_est_unitaire(clause *clause){
     if (clause_est_unitaire(clause)) printf("la clause est unitaire");
     else printf("la clause n'est pas unitaire");
 }
+void solveur_sat(arbre * Arbre, int numero_variable_a_evaluer, int assignation){
+    if(Arbre->continuer_simpliflication == 0) printf("formule unsat");
+    else {
+        arbre *gauche = (arbre *)malloc(sizeof(arbre));
+        gauche->formule=simplifier_formule(Arbre,assignation);
+        gauche->continuer_simpliflication=Arbre->continuer_simpliflication;
+        gauche->nombre_clause=3;
+        gauche->numero_variable_a_evaluer=Arbre->numero_variable_a_evaluer;
+        
+        arbre *droit = (arbre *)malloc(sizeof(Arbre));
+        droit->formule=simplifier_formule(Arbre,assignation);
+        droit->continuer_simpliflication=Arbre->continuer_simpliflication;
+        droit->nombre_clause=3;
+        droit->numero_variable_a_evaluer=Arbre->numero_variable_a_evaluer;
+        if(numero_variable_a_evaluer<4){
+        solveur_sat(gauche, numero_variable_a_evaluer,0);
+        solveur_sat(droit, numero_variable_a_evaluer,1);
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /* arbre * sous_arbre1 = (arbre *)malloc(sizeof(arbre));
+    arbre * sous_arbre2 = (arbre *)malloc(sizeof(arbre));
+    sous_arbre1->continuer_simpliflication=1;
+    sous_arbre1->nombre_clause=3;
+    sous_arbre1->nombre_clause_sat=0;
+    sous_arbre1->numero_variable_a_evaluer=Arbre->numero_variable_a_evaluer;
+    
+    sous_arbre2->continuer_simpliflication=1;
+    sous_arbre2->nombre_clause=3;
+    sous_arbre2->nombre_clause_sat=0;
+    sous_arbre2->numero_variable_a_evaluer=Arbre->numero_variable_a_evaluer;
+    
+    sous_arbre1->formule = simplifier_formule(Arbre,assignation);
+    sous_arbre2->formule = simplifier_formule(Arbre,assignation+1);
+    
+    printf(" arbre 1 \n    ");
+    
+    if(test_formule_est_sat(sous_arbre1)) printf("SAT1");
+    else printf("pasSAT1");
+    
+
+
+    
+    if(sous_arbre1->continuer_simpliflication){
+        if(sous_arbre1->numero_variable_a_evaluer<4) sous_arbre1->numero_variable_a_evaluer++;
+        if(sous_arbre1->numero_variable_a_evaluer<4)
+        solveur_sat(sous_arbre1, sous_arbre1->numero_variable_a_evaluer, 0);
+    }
+    printf("\n arbre 2 \n    ");
+    
+    if(test_formule_est_sat(sous_arbre2)) printf("SAT2");
+    else printf("pasSAT2");
+    if (sous_arbre2->continuer_simpliflication){
+        if(sous_arbre2->numero_variable_a_evaluer<3) sous_arbre2->numero_variable_a_evaluer++;
+        if(sous_arbre2->numero_variable_a_evaluer<3)
+           solveur_sat(sous_arbre2, sous_arbre2->numero_variable_a_evaluer+1, 0);
+       }
+    //printf(" FORMULE UNSAT");
+    
+    */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+/*
+    simplifier_formule(arbre, 0);
+    if(arbre->continuer_simpliflication == 0) printf("la formule est UNSAT");
+    simplifier_formule(arbre, 1);
+    if(arbre->continuer_simpliflication == 0) printf("la formule est UNSAT");
+    else if(arbre->continuer_simpliflication){
+        arbre->numero_variable_a_evaluer++;
+        solveur_sat(arbre->fils_droit,arbre->numero_variable_a_evaluer );
+    }
+    else printf("la formule est SAT");
+*/
+   
+}
+ 

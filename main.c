@@ -65,46 +65,43 @@ int main(int argc, char** argv) {
     clause * Clause = (clause*)malloc(sizeof(clause));
     clause * Clause2 = (clause*)malloc(sizeof(clause));
     clause * Clause3 = (clause*)malloc(sizeof(clause));
+    clause * Clause4 = (clause*)malloc(sizeof(clause));
     Clause->Sat=0;
     Clause->nombre_literaux=3;
     Clause->nxt=Clause2;
     Clause->prv=NULL;
     Clause->variable=genererTableau(3);
     Clause->variable[0]=1;
-    Clause->variable[1]=-5;
+    Clause->variable[1]=2;
     Clause->variable[2]=3;
     
+    
     Clause2->Sat=0;
-    Clause2->nombre_literaux=3;
+    Clause2->nombre_literaux=2;
     Clause2->nxt=Clause3;
     Clause2->prv=Clause;
     Clause2->variable=genererTableau(3);
-    Clause2->variable[0]=3;
-    Clause2->variable[1]=7;
-    Clause2->variable[2]=-9;
-    
+    Clause2->variable[0]=2;
+    Clause2->variable[1]=3;
+   
     Clause3->Sat=0;
-    Clause3->nombre_literaux=3;
+    Clause3->nombre_literaux=2;
     Clause3->nxt=NULL;
     Clause3->prv=Clause2;
     Clause3->variable=genererTableau(3);
-    Clause3->variable[0]=8;
-    Clause3->variable[1]=3;
-    Clause3->variable[2]=-2;
-    
-    
+    Clause3->variable[0]=3;
+    Clause3->variable[1]=1;
     
     arbre * Arbre=(arbre *)malloc(sizeof(arbre));
-    Arbre->fils_droit=NULL;
-    Arbre->fils_gauche=NULL;
+    
     Arbre->formule= Clause;
-    Arbre->numero_variable_a_evaluer=-2;
-    Arbre->pere=NULL;
+    Arbre->numero_variable_a_evaluer=1;
     Arbre->nombre_clause=3;
     Arbre->nombre_clause_sat=0;
-    unit_test_simplifier_formule(Arbre);
+    Arbre->continuer_simpliflication=1;
+    solveur_sat(Arbre,1,0);
     printf("\n");
-    unit_test_formule_est_sat(Arbre);
+    
     
     return 0;
 }
