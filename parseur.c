@@ -65,3 +65,27 @@ void ajout_clause(clause *p,int *va,int nb){
         p=c;
 	}
 }
+
+void solveur_sat(arbre *a, int numero_variable_a_evaluer, int assignation,int nb_var,int nb_cla){
+    int i;
+    arbre *b=malloc(sizeof(arbre));
+    b->continuer_simpliflication=1;
+    b->nombre_clause_sat=a->nombre_clause_sat;
+    b->numero_variable_a_evaluer=a->numero_variable_a_evaluer;
+    b->formule=simplifier_formule(a,assignation);
+    b->nombre_clause=nb_cla;
+    b->historique_des_evalutions=malloc(sizeof(int)*nb_var);
+    for(i=0;i<numero_variable_a_evaluer && numero_variable_a_evaluer>1;i++)
+        b->historique_des_evalutions[i]=a->historique_des_evalutions[i-1];
+    b->historique_des_evalutions[i]=assignation;
+    if(formule_est_sat(b)){
+        printf("SAT\n");
+        exit(EXIT_SUCCESS);
+    }
+    else if(numero_variable_a_evaluer==nb_var){
+        printf("UNSAT\n");
+        exit(EXIT_SUCCESS);
+    }
+    solveur_sat(b,numero_variable_a_evaluer+1,1,nb_var,nb_cla);
+    solveur_sat(b,numero_variable_a_evaluer+1,0,nb_var,nb_cla);
+}
