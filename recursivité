@@ -1,0 +1,15 @@
+int solveur(arbre *a, int assignation, int *sol,int nb_var){
+    arbre *b=copieabr(a,assignation);
+    if(formule_est_sat(b)){
+       int i=0;
+       for(;b->historique_des_evalutions[i]==0 || b->historique_des_evalutions[i]==1;i++)
+            sol[i]=b->historique_des_evalutions;
+       for(;i<nb_var;i++)
+            sol[i]=0;
+        return 1;
+    }
+    else if(b->numero_variable_a_evaluer==nb_var)
+        return 0;
+    else
+        return solveur(b,0,sol,nb_var) || solveur(b,1,sol,nb_var);
+}
